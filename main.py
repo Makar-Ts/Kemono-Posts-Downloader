@@ -6,6 +6,7 @@ from math import floor, ceil
 import argparse
 import sys
 import os
+import re
 import json
 import requests
 
@@ -195,6 +196,8 @@ print(f"\nTotal posts count: {total_posts}")
 #                          Write Data & Download Pics                          #
 # ---------------------------------------------------------------------------- #
 
+file_rematch = re.compile("^[\w\-. ]+$")
+
 # make sure we have output dir
 os.makedirs(os.path.join(sys.path[0], args.outdir), exist_ok=True)
 
@@ -234,6 +237,9 @@ for i, post in enumerate(all_data[args.start_from:]):
         continue
     
     for j, file in enumerate(post["attachments"]):
+        if not file_rematch.fullmatch(file["name"]):
+            file["name"] = str(j)
+        
         print(filename, file["name"])
         
         download_file(
